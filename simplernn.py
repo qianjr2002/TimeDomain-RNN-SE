@@ -16,7 +16,8 @@ class SimpleRNNModel(nn.Module):
             nn.PReLU()
         )
         
-        self.spatial_filters = nn.Parameter(torch.randn(hidden_dim, n_channels))
+        self.spatial_filters = nn.Parameter(torch.empty(hidden_dim, n_channels))
+        nn.init.kaiming_uniform_(self.spatial_filters)
         
         self.rnn_layers = nn.ModuleList([
             nn.ModuleDict({
@@ -63,6 +64,7 @@ class SimpleRNNModel(nn.Module):
 if __name__ == "__main__":
     from ptflops import get_model_complexity_info
 
+    print("Table 3:")
     print("L=4ms")
     model_L4_C2_H300_a  = SimpleRNNModel(n_channels=2, hidden_dim=300, iW=64, oW=64, S=16, B=3)
     flops, params = get_model_complexity_info(model_L4_C2_H300_a, (2, 16000),print_per_layer_stat=False)
@@ -177,6 +179,11 @@ if __name__ == "__main__":
     print(f"model_L1_C2_H300_b flops {flops} params {params}")
     # model_L1_C2_H300_b flops 2.34 GMac params 2.25 M
 
+    model_L1_C4_H300_b  = SimpleRNNModel(n_channels=4, hidden_dim=300, iW=256, oW=16, S=16, B=3)
+    flops, params = get_model_complexity_info(model_L1_C4_H300_b, (4, 16000),print_per_layer_stat=False)
+    print(f"model_L1_C4_H300_b flops {flops} params {params}")
+    # model_L1_C4_H300_b flops 2.49 GMac params 2.25 M
+
     model_L1_C8_H300_b  = SimpleRNNModel(n_channels=8, hidden_dim=300, iW=256, oW=16, S=16, B=3)
     flops, params = get_model_complexity_info(model_L1_C8_H300_b, (8, 16000),print_per_layer_stat=False)
     print(f"model_L1_C8_H300_b flops {flops} params {params}")
@@ -196,3 +203,168 @@ if __name__ == "__main__":
     flops, params = get_model_complexity_info(model_L1_C8_H1024_b, (8, 16000),print_per_layer_stat=False)
     print(f"model_L1_C8_H1024_b flops {flops} params {params}")
     # model_L1_C8_H1024_b flops 27.37 GMac params 25.49 M
+
+    # 模式,iW (输入窗),oW (输出窗)
+    # Approach (a),L×16,L×16
+    # Approach (b),256 (固定 16ms),L×16
+    model_T1_L1_C2_a = SimpleRNNModel(n_channels=2, hidden_dim=256, iW=16, oW=16, S=16, B=3)
+    model_T1_L1_C2_b = SimpleRNNModel(n_channels=2, hidden_dim=256, iW=256, oW=16, S=16, B=3)
+    model_T1_L1_C4_a = SimpleRNNModel(n_channels=4, hidden_dim=256, iW=16, oW=16, S=16, B=3)
+    model_T1_L1_C4_b = SimpleRNNModel(n_channels=4, hidden_dim=256, iW=256, oW=16, S=16, B=3)
+    model_T1_L1_C8_a = SimpleRNNModel(n_channels=8, hidden_dim=256, iW=16, oW=16, S=16, B=3)
+    model_T1_L1_C8_b = SimpleRNNModel(n_channels=8, hidden_dim=256, iW=256, oW=16, S=16, B=3)
+
+    model_T1_L2_C2_a = SimpleRNNModel(n_channels=2, hidden_dim=256, iW=32, oW=32, S=16, B=3)
+    model_T1_L2_C2_b = SimpleRNNModel(n_channels=2, hidden_dim=256, iW=256, oW=32, S=16, B=3)
+    model_T1_L2_C4_a = SimpleRNNModel(n_channels=4, hidden_dim=256, iW=32, oW=32, S=16, B=3)
+    model_T1_L2_C4_b = SimpleRNNModel(n_channels=4, hidden_dim=256, iW=256, oW=32, S=16, B=3)
+    model_T1_L2_C8_a = SimpleRNNModel(n_channels=8, hidden_dim=256, iW=32, oW=32, S=16, B=3)
+    model_T1_L2_C8_b = SimpleRNNModel(n_channels=8, hidden_dim=256, iW=256, oW=32, S=16, B=3)
+
+    model_T1_L4_C2_a = SimpleRNNModel(n_channels=2, hidden_dim=256, iW=64, oW=64, S=16, B=3)
+    model_T1_L4_C2_b = SimpleRNNModel(n_channels=2, hidden_dim=256, iW=256, oW=64, S=16, B=3)
+    model_T1_L4_C4_a = SimpleRNNModel(n_channels=4, hidden_dim=256, iW=64, oW=64, S=16, B=3)
+    model_T1_L4_C4_b = SimpleRNNModel(n_channels=4, hidden_dim=256, iW=256, oW=64, S=16, B=3)
+    model_T1_L4_C8_a = SimpleRNNModel(n_channels=8, hidden_dim=256, iW=64, oW=64, S=16, B=3)
+    model_T1_L4_C8_b = SimpleRNNModel(n_channels=8, hidden_dim=256, iW=256, oW=64, S=16, B=3)
+
+    model_T1_L8_C2_a = SimpleRNNModel(n_channels=2, hidden_dim=256, iW=128, oW=128, S=16, B=3)
+    model_T1_L8_C2_b = SimpleRNNModel(n_channels=2, hidden_dim=256, iW=256, oW=128, S=16, B=3)
+    model_T1_L8_C4_a = SimpleRNNModel(n_channels=4, hidden_dim=256, iW=128, oW=128, S=16, B=3)
+    model_T1_L8_C4_b = SimpleRNNModel(n_channels=4, hidden_dim=256, iW=256, oW=128, S=16, B=3)
+    model_T1_L8_C8_a = SimpleRNNModel(n_channels=8, hidden_dim=256, iW=128, oW=128, S=16, B=3)
+    model_T1_L8_C8_b = SimpleRNNModel(n_channels=8, hidden_dim=256, iW=256, oW=128, S=16, B=3)
+
+    model_T1_L16_C2_a = SimpleRNNModel(n_channels=2, hidden_dim=256, iW=256, oW=256, S=16, B=3)
+    model_T1_L16_C2_b = SimpleRNNModel(n_channels=2, hidden_dim=256, iW=256, oW=256, S=16, B=3)
+    model_T1_L16_C4_a = SimpleRNNModel(n_channels=4, hidden_dim=256, iW=256, oW=256, S=16, B=3)
+    model_T1_L16_C4_b = SimpleRNNModel(n_channels=4, hidden_dim=256, iW=256, oW=256, S=16, B=3)
+    model_T1_L16_C8_a = SimpleRNNModel(n_channels=8, hidden_dim=256, iW=256, oW=256, S=16, B=3)
+    model_T1_L16_C8_b = SimpleRNNModel(n_channels=8, hidden_dim=256, iW=256, oW=256, S=16, B=3)
+
+
+
+    print("Table 2:")
+    # Approach      iW (输入窗),oW (输出窗)
+    # (a),32 (fixed 2ms)      ,32
+    # (b),256 (fixed 16ms)     ,32
+    model_T2_H64_C2_a = SimpleRNNModel(n_channels=2, hidden_dim=64, iW=32, oW=32, S=16, B=3)
+    flops, params = get_model_complexity_info(model_T2_H64_C2_a, (2, 16000),print_per_layer_stat=False)
+    print(f"model_T2_H64_C2_a flops {flops} params {params}")
+    # model_T2_H64_C2_a flops 108.53 MMac params 104.67 k
+
+    model_T2_H64_C2_b = SimpleRNNModel(n_channels=2, hidden_dim=64, iW=256, oW=32, S=16, B=3)
+    flops, params = get_model_complexity_info(model_T2_H64_C2_b, (2, 16000),print_per_layer_stat=False)
+    print(f"model_T2_H64_C2_b flops {flops} params {params}")
+    # model_T2_H64_C2_b flops 137.17 MMac params 119.01 k
+
+    model_T2_H64_C4_a = SimpleRNNModel(n_channels=4, hidden_dim=64, iW=32, oW=32, S=16, B=3)
+    flops, params = get_model_complexity_info(model_T2_H64_C4_a, (4, 16000),print_per_layer_stat=False)
+    print(f"model_T2_H64_C4_a flops {flops} params {params}")
+    # model_T2_H64_C4_a flops 113.13 MMac params 104.8 k
+    
+    model_T2_H64_C4_b = SimpleRNNModel(n_channels=4, hidden_dim=64, iW=256, oW=32, S=16, B=3)
+    flops, params = get_model_complexity_info(model_T2_H64_C4_b, (4, 16000),print_per_layer_stat=False)
+    print(f"model_T2_H64_C4_b flops {flops} params {params}")
+    # model_T2_H64_C4_b flops 170.42 MMac params 119.14 k
+    
+    model_T2_H64_C8_a = SimpleRNNModel(n_channels=8, hidden_dim=64, iW=32, oW=32, S=16, B=3)
+    flops, params = get_model_complexity_info(model_T2_H64_C8_a, (8, 16000),print_per_layer_stat=False)
+    print(f"model_T2_H64_C8_a flops {flops} params {params}")
+    # model_T2_H64_C8_a flops 122.34 MMac params 105.06 k
+    
+    model_T2_H64_C8_b = SimpleRNNModel(n_channels=8, hidden_dim=64, iW=256, oW=32, S=16, B=3)
+    flops, params = get_model_complexity_info(model_T2_H64_C8_b, (8, 16000),print_per_layer_stat=False)
+    print(f"model_T2_H64_C8_b flops {flops} params {params}")
+    # model_T2_H64_C8_b flops 236.91 MMac params 119.39 k
+
+    model_T2_H128_C2_a = SimpleRNNModel(n_channels=2, hidden_dim=128, iW=32, oW=32, S=16, B=3)
+    flops, params = get_model_complexity_info(model_T2_H128_C2_a, (2, 16000),print_per_layer_stat=False)
+    print(f"model_T2_H128_C2_a flops {flops} params {params}")
+    # model_T2_H128_C2_a flops 413.44 MMac params 405.92 k
+    
+    model_T2_H128_C2_b = SimpleRNNModel(n_channels=2, hidden_dim=128, iW=256, oW=32, S=16, B=3)
+    flops, params = get_model_complexity_info(model_T2_H128_C2_b, (2, 16000),print_per_layer_stat=False)
+    print(f"model_T2_H128_C2_b flops {flops} params {params}")
+    # model_T2_H128_C2_b flops 470.73 MMac params 434.59 k
+    
+    model_T2_H128_C4_a = SimpleRNNModel(n_channels=4, hidden_dim=128, iW=32, oW=32, S=16, B=3)
+    flops, params = get_model_complexity_info(model_T2_H128_C4_a, (4, 16000),print_per_layer_stat=False)
+    print(f"model_T2_H128_C4_a flops {flops} params {params}")
+    # model_T2_H128_C4_a flops 422.65 MMac params 406.18 k
+
+    model_T2_H128_C4_b = SimpleRNNModel(n_channels=4, hidden_dim=128, iW=256, oW=32, S=16, B=3)
+    flops, params = get_model_complexity_info(model_T2_H128_C4_b, (4, 16000),print_per_layer_stat=False)
+    print(f"model_T2_H128_C4_b flops {flops} params {params}")
+    # model_T2_H128_C4_b flops 537.22 MMac params 434.85 k
+
+    model_T2_H128_C8_a = SimpleRNNModel(n_channels=8, hidden_dim=128, iW=32, oW=32, S=16, B=3)
+    flops, params = get_model_complexity_info(model_T2_H128_C8_a, (8, 16000),print_per_layer_stat=False)
+    print(f"model_T2_H128_C8_a flops {flops} params {params}")
+    # model_T2_H128_C8_a flops 441.06 MMac params 406.69 k
+
+    model_T2_H128_C8_b = SimpleRNNModel(n_channels=8, hidden_dim=128, iW=256, oW=32, S=16, B=3)
+    flops, params = get_model_complexity_info(model_T2_H128_C8_b, (8, 16000),print_per_layer_stat=False)
+    print(f"model_T2_H128_C8_b flops {flops} params {params}")
+    # model_T2_H128_C8_b flops 670.21 MMac params 435.36 k
+
+    model_T2_H256_C2_a = SimpleRNNModel(n_channels=2, hidden_dim=256, iW=32, oW=32, S=16, B=3)
+    flops, params = get_model_complexity_info(model_T2_H256_C2_a, (2, 16000),print_per_layer_stat=False)
+    print(f"model_T2_H256_C2_a flops {flops} params {params}")
+    # model_T2_H256_C2_a flops 1.61 GMac params 1.6 M
+
+    model_T2_H256_C2_b = SimpleRNNModel(n_channels=2, hidden_dim=256, iW=256, oW=32, S=16, B=3)
+    flops, params = get_model_complexity_info(model_T2_H256_C2_b, (2, 16000),print_per_layer_stat=False)
+    print(f"model_T2_H256_C2_b flops {flops} params {params}")
+    # model_T2_H256_C2_b flops 1.73 GMac params 1.66 M
+
+    model_T2_H256_C4_a = SimpleRNNModel(n_channels=4, hidden_dim=256, iW=32, oW=32, S=16, B=3)
+    flops, params = get_model_complexity_info(model_T2_H256_C4_a, (4, 16000),print_per_layer_stat=False)
+    print(f"model_T2_H256_C4_a flops {flops} params {params}")
+    # model_T2_H256_C4_a flops 1.63 GMac params 1.6 M
+
+    model_T2_H256_C4_b = SimpleRNNModel(n_channels=4, hidden_dim=256, iW=256, oW=32, S=16, B=3)
+    flops, params = get_model_complexity_info(model_T2_H256_C4_b, (4, 16000),print_per_layer_stat=False)
+    print(f"model_T2_H256_C4_b flops {flops} params {params}")
+    # model_T2_H256_C4_b flops 1.86 GMac params 1.66 M
+
+    model_T2_H256_C8_a = SimpleRNNModel(n_channels=8, hidden_dim=256, iW=32, oW=32, S=16, B=3)
+    flops, params = get_model_complexity_info(model_T2_H256_C8_a, (8, 16000),print_per_layer_stat=False)
+    print(f"model_T2_H256_C8_a flops {flops} params {params}")
+    # model_T2_H256_C8_a flops 1.67 GMac params 1.6 M
+
+    model_T2_H256_C8_b = SimpleRNNModel(n_channels=8, hidden_dim=256, iW=256, oW=32, S=16, B=3)
+    flops, params = get_model_complexity_info(model_T2_H256_C8_b, (8, 16000),print_per_layer_stat=False)
+    print(f"model_T2_H256_C8_b flops {flops} params {params}")
+    # model_T2_H256_C8_b flops 2.13 GMac params 1.66 M
+
+    model_T2_H512_C2_a = SimpleRNNModel(n_channels=2, hidden_dim=512, iW=32, oW=32, S=16, B=3)
+    flops, params = get_model_complexity_info(model_T2_H512_C2_a, (2, 16000),print_per_layer_stat=False)
+    print(f"model_T2_H512_C2_a flops {flops} params {params}")
+    # model_T2_H512_C2_a flops 6.37 GMac params 6.34 M
+
+    model_T2_H512_C2_b = SimpleRNNModel(n_channels=2, hidden_dim=512, iW=256, oW=32, S=16, B=3)
+    flops, params = get_model_complexity_info(model_T2_H512_C2_b, (2, 16000),print_per_layer_stat=False)
+    print(f"model_T2_H512_C2_b flops {flops} params {params}")
+    # model_T2_H512_C2_b flops 6.6 GMac params 6.46 M
+
+    model_T2_H512_C4_a = SimpleRNNModel(n_channels=4, hidden_dim=512, iW=32, oW=32, S=16, B=3)
+    flops, params = get_model_complexity_info(model_T2_H512_C4_a, (4, 16000),print_per_layer_stat=False)
+    print(f"model_T2_H512_C4_a flops {flops} params {params}")
+    # model_T2_H512_C4_a flops 6.4 GMac params 6.34 M
+
+    model_T2_H512_C4_b = SimpleRNNModel(n_channels=4, hidden_dim=512, iW=256, oW=32, S=16, B=3)
+    flops, params = get_model_complexity_info(model_T2_H512_C4_b, (4, 16000),print_per_layer_stat=False)
+    print(f"model_T2_H512_C4_b flops {flops} params {params}")
+    # model_T2_H512_C4_b flops 6.86 GMac params 6.46 M
+
+    model_T2_H512_C8_a = SimpleRNNModel(n_channels=8, hidden_dim=512, iW=32, oW=32, S=16, B=3)
+    flops, params = get_model_complexity_info(model_T2_H512_C8_a, (8, 16000),print_per_layer_stat=False)
+    print(f"model_T2_H512_C8_a flops {flops} params {params}")
+    # model_T2_H512_C8_a flops 6.48 GMac params 6.35 M
+
+    model_T2_H512_C8_b = SimpleRNNModel(n_channels=8, hidden_dim=512, iW=256, oW=32, S=16, B=3)
+    flops, params = get_model_complexity_info(model_T2_H512_C8_b, (8, 16000),print_per_layer_stat=False)
+    print(f"model_T2_H512_C8_b flops {flops} params {params}")
+    # model_T2_H512_C8_b flops 7.39 GMac params 6.46 M
+
