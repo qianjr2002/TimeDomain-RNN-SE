@@ -204,9 +204,9 @@ if __name__ == "__main__":
     print(f"model_L1_C8_H1024_b flops {flops} params {params}")
     # model_L1_C8_H1024_b flops 27.37 GMac params 25.49 M
 
-    # 模式,iW (输入窗),oW (输出窗)
-    # Approach (a),L×16,L×16
-    # Approach (b),256 (固定 16ms),L×16
+    # Approach, iW (input window), oW (output window)
+    # Approach (a), L×16, L×16
+    # Approach (b), 256 (fixed 16ms), L×16
     model_T1_L1_C2_a = SimpleRNNModel(n_channels=2, hidden_dim=256, iW=16, oW=16, S=16, B=3)
     model_T1_L1_C2_b = SimpleRNNModel(n_channels=2, hidden_dim=256, iW=256, oW=16, S=16, B=3)
     model_T1_L1_C4_a = SimpleRNNModel(n_channels=4, hidden_dim=256, iW=16, oW=16, S=16, B=3)
@@ -245,9 +245,9 @@ if __name__ == "__main__":
 
 
     print("Table 2:")
-    # Approach      iW (输入窗),oW (输出窗)
-    # (a),32 (fixed 2ms)      ,32
-    # (b),256 (fixed 16ms)     ,32
+    # Approach, iW (input window), oW (output window)
+    # (a), 32 (fixed 2ms), 32
+    # (b), 256 (fixed 16ms), 32
     model_T2_H64_C2_a = SimpleRNNModel(n_channels=2, hidden_dim=64, iW=32, oW=32, S=16, B=3)
     flops, params = get_model_complexity_info(model_T2_H64_C2_a, (2, 16000),print_per_layer_stat=False)
     print(f"model_T2_H64_C2_a flops {flops} params {params}")
