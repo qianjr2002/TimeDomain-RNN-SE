@@ -11,7 +11,7 @@ This project implements a lightweight RNN-based model for real-time multichannel
 The `SimpleRNNModel` consists of the following components:
 
 - **Input Projection**: Linear layer + LayerNorm + PReLU
-- **Spatial Filters**: Learnable spatial attention mechanism for multichannel processing
+- **Spatial Filters**: Learnable spatial filtering mechanism for multichannel processing
 - **RNN Layers**: Stack of LSTM layers with LayerNorm (default: 3 layers)
 - **Output Projection**: Linear layer for enhanced signal reconstruction
 
@@ -42,8 +42,8 @@ model = SimpleRNNModel(
 )
 
 # Forward pass
-# Input shape: [batch_size, n_channels, num_samples]
-# Output shape: [batch_size, num_samples]
+# Input shape: [batch_size, n_channels, num_samples] (e.g., [1, 8, 16000])
+# Output shape: [batch_size, num_samples] (Single-channel enhanced audio)
 enhanced_audio = model(input_audio)
 ```
 
@@ -56,6 +56,18 @@ python simplernn.py
 ```
 
 This will output FLOPs and parameter counts for different model variants.
+
+Note: All FLOPs (GMacs/MMacs) listed below are calculated for processing 1 second of 16kHz audio ($N=16000$).
+
+### Latency Explanation
+
+#### Approach (a): Enhancement with Minimum Input Context
+
+$iW = oW = L$
+
+#### Approach (b): Enhancement with Fixed Input Context
+
+$iW = 16\text{ms}$ (fixed), $oW = L$
 
 ## Model Configurations
 
@@ -165,6 +177,9 @@ The implementation supports two main approaches:
 ## Technical Details
 
 ### Spatial Filtering
+Unlike traditional spatial attention, this model applies $H$ trainable linear filters across the $C$ channels to capture frequency-dependent spatial information efficiently:
+$$y_t = \sum_{c=1}^{C} w_{h,c} \cdot x_{t,c}$$
+where $w \in \mathbb{R}^{H \times C}$ is the `spatial_filters` parameter.
 
 The model uses learnable spatial filters to combine information across multiple input channels:
 
