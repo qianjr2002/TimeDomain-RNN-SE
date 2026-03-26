@@ -1,6 +1,6 @@
 # TimeDomain-RNN-SE
 
-🚀 Unofficial implementation of "A Simple RNN Model for Lightweight, Low-compute and Low-latency Multichannel Speech Enhancement in the Time Domain" in PyTorch.
+🚀 Unofficial implementation of [A Simple RNN Model for Lightweight, Low-compute and Low-latency Multichannel Speech Enhancement in the Time Domain](https://www.isca-archive.org/interspeech_2023/pandey23b_interspeech.html) in PyTorch.
 
 ## Overview
 
