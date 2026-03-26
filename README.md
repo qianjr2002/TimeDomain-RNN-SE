@@ -61,30 +61,86 @@ This will output FLOPs and parameter counts for different model variants.
 
 ### Table 3: Latency vs. Performance Trade-offs
 
+#### Approach (a): Input and output windows vary with latency (iW = L×16, oW = L×16)
+
 | Model | Channels | Hidden Dim | Input Window | Output Window | FLOPs | Parameters |
 |-------|----------|------------|--------------|---------------|-------|------------|
-| L1_C2_H300_a | 2 | 300 | 16 (1ms) | 16 (1ms) | 2.19 GMac | 2.18 M |
-| L1_C4_H300_a | 4 | 300 | 16 (1ms) | 16 (1ms) | 2.21 GMac | 2.18 M |
-| L1_C8_H300_a | 8 | 300 | 16 (1ms) | 16 (1ms) | 2.23 GMac | 2.18 M |
-| L2_C2_H300_a | 2 | 300 | 32 (2ms) | 32 (2ms) | 2.21 GMac | 2.19 M |
-| L2_C4_H300_a | 4 | 300 | 32 (2ms) | 32 (2ms) | 2.23 GMac | 2.19 M |
-| L2_C8_H300_a | 8 | 300 | 32 (2ms) | 32 (2ms) | 2.27 GMac | 2.19 M |
 | L4_C2_H300_a | 2 | 300 | 64 (4ms) | 64 (4ms) | 2.23 GMac | 2.21 M |
 | L4_C4_H300_a | 4 | 300 | 64 (4ms) | 64 (4ms) | 2.27 GMac | 2.21 M |
 | L4_C8_H300_a | 8 | 300 | 64 (4ms) | 64 (4ms) | 2.35 GMac | 2.21 M |
+| L2_C2_H300_a | 2 | 300 | 32 (2ms) | 32 (2ms) | 2.21 GMac | 2.19 M |
+| L2_C4_H300_a | 4 | 300 | 32 (2ms) | 32 (2ms) | 2.23 GMac | 2.19 M |
+| L2_C8_H300_a | 8 | 300 | 32 (2ms) | 32 (2ms) | 2.27 GMac | 2.19 M |
+| L1_C2_H300_a | 2 | 300 | 16 (1ms) | 16 (1ms) | 2.19 GMac | 2.18 M |
+| L1_C4_H300_a | 4 | 300 | 16 (1ms) | 16 (1ms) | 2.21 GMac | 2.18 M |
+| L1_C8_H300_a | 8 | 300 | 16 (1ms) | 16 (1ms) | 2.23 GMac | 2.18 M |
 
-### Table 2: Model Size Variants
+#### Approach (b): Fixed input window (iW = 256 samples = 16ms), output window varies with latency (oW = L×16)
+
+| Model | Channels | Hidden Dim | Input Window | Output Window | FLOPs | Parameters |
+|-------|----------|------------|--------------|---------------|-------|------------|
+| L4_C2_H300_b | 2 | 300 | 256 (16ms) | 64 (4ms) | 2.35 GMac | 2.27 M |
+| L4_C4_H300_b | 4 | 300 | 256 (16ms) | 64 (4ms) | 2.50 GMac | 2.27 M |
+| L4_C8_H300_b | 8 | 300 | 256 (16ms) | 64 (4ms) | 2.81 GMac | 2.27 M |
+| L2_C2_H300_b | 2 | 300 | 256 (16ms) | 32 (2ms) | 2.34 GMac | 2.26 M |
+| L2_C4_H300_b | 4 | 300 | 256 (16ms) | 32 (2ms) | 2.50 GMac | 2.26 M |
+| L2_C8_H300_b | 8 | 300 | 256 (16ms) | 32 (2ms) | 2.81 GMac | 2.26 M |
+| L1_C2_H300_b | 2 | 300 | 256 (16ms) | 16 (1ms) | 2.34 GMac | 2.25 M |
+| L1_C4_H300_b | 4 | 300 | 256 (16ms) | 16 (1ms) | 2.49 GMac | 2.25 M |
+| L1_C8_H300_b | 8 | 300 | 256 (16ms) | 16 (1ms) | 2.81 GMac | 2.25 M |
+
+#### Approach (b) with larger hidden dimension (H1024)
+
+| Model | Channels | Hidden Dim | Input Window | Output Window | FLOPs | Parameters |
+|-------|----------|------------|--------------|---------------|-------|------------|
+| L4_C2_H1024_b | 2 | 1024 | 256 (16ms) | 64 (4ms) | 25.74 GMac | 25.53 M |
+| L4_C4_H1024_b | 4 | 1024 | 256 (16ms) | 64 (4ms) | 26.28 GMac | 25.53 M |
+| L4_C8_H1024_b | 8 | 1024 | 256 (16ms) | 64 (4ms) | 27.34 GMac | 25.54 M |
+| L2_C2_H1024_b | 2 | 1024 | 256 (16ms) | 32 (2ms) | 25.76 GMac | 25.50 M |
+| L2_C4_H1024_b | 4 | 1024 | 256 (16ms) | 32 (2ms) | 26.30 GMac | 25.50 M |
+| L2_C8_H1024_b | 8 | 1024 | 256 (16ms) | 32 (2ms) | 27.36 GMac | 25.50 M |
+| L1_C2_H1024_b | 2 | 1024 | 256 (16ms) | 16 (1ms) | 25.77 GMac | 25.48 M |
+| L1_C4_H1024_b | 4 | 1024 | 256 (16ms) | 16 (1ms) | 26.31 GMac | 25.48 M |
+| L1_C8_H1024_b | 8 | 1024 | 256 (16ms) | 16 (1ms) | 27.37 GMac | 25.49 M |
+
+### Table 2: Performance for 2ms Latency with Varying Widths
+
+Performance of the proposed model for an algorithmic latency of 2 ms with varying widths.
+
+#### Approach (a): Input window = 32 samples (2ms), Output window = 32 samples (2ms)
 
 | Model | Channels | Hidden Dim | FLOPs | Parameters |
 |-------|----------|------------|-------|------------|
 | H64_C2_a | 2 | 64 | 108.53 MMac | 104.67 k |
-| H64_C2_b | 2 | 64 | 137.17 MMac | 119.01 k |
+| H64_C4_a | 4 | 64 | 113.13 MMac | 104.80 k |
+| H64_C8_a | 8 | 64 | 122.34 MMac | 105.06 k |
 | H128_C2_a | 2 | 128 | 413.44 MMac | 405.92 k |
-| H128_C2_b | 2 | 128 | 470.73 MMac | 434.59 k |
-| H256_C2_a | 2 | 256 | 1.61 GMac | 1.6 M |
-| H256_C2_b | 2 | 256 | 1.73 GMac | 1.66 M |
+| H128_C4_a | 4 | 128 | 422.65 MMac | 406.18 k |
+| H128_C8_a | 8 | 128 | 441.06 MMac | 406.69 k |
+| H256_C2_a | 2 | 256 | 1.61 GMac | 1.60 M |
+| H256_C4_a | 4 | 256 | 1.63 GMac | 1.60 M |
+| H256_C8_a | 8 | 256 | 1.67 GMac | 1.60 M |
 | H512_C2_a | 2 | 512 | 6.37 GMac | 6.34 M |
-| H512_C2_b | 2 | 512 | 6.6 GMac | 6.46 M |
+| H512_C4_a | 4 | 512 | 6.40 GMac | 6.34 M |
+| H512_C8_a | 8 | 512 | 6.48 GMac | 6.35 M |
+
+
+#### Approach (b): Input window = 256 samples (16ms), Output window = 32 samples (2ms)
+
+| Model | Channels | Hidden Dim | FLOPs | Parameters |
+|-------|----------|------------|-------|------------|
+| H64_C2_b | 2 | 64 | 137.17 MMac | 119.01 k |
+| H64_C4_b | 4 | 64 | 170.42 MMac | 119.14 k |
+| H64_C8_b | 8 | 64 | 236.91 MMac | 119.39 k |
+| H128_C2_b | 2 | 128 | 470.73 MMac | 434.59 k |
+| H128_C4_b | 4 | 128 | 537.22 MMac | 434.85 k |
+| H128_C8_b | 8 | 128 | 670.21 MMac | 435.36 k |
+| H256_C2_b | 2 | 256 | 1.73 GMac | 1.66 M |
+| H256_C4_b | 4 | 256 | 1.86 GMac | 1.66 M |
+| H256_C8_b | 8 | 256 | 2.13 GMac | 1.66 M |
+| H512_C2_b | 2 | 512 | 6.60 GMac | 6.46 M |
+| H512_C4_b | 4 | 512 | 6.86 GMac | 6.46 M |
+| H512_C8_b | 8 | 512 | 7.39 GMac | 6.46 M |
 
 ## Model Variants
 
